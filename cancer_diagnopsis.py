@@ -8,7 +8,6 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 IMG_SIZE = 224
 SAMPLE_IMG_DIR = Path("sample_images")
 
-
 st.header("Image diagnosis of cancer using histopathology")
 st.markdown(
     "Predict whether samples of tumour tissue are *benign* or "
@@ -102,5 +101,5 @@ with sample_tab:
         get_prediction(image_list[idx])
 
 st.caption(
-    "Not Social Club"
+    "Not Social Club."
 )
