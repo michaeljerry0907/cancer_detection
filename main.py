@@ -8,10 +8,9 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 IMG_SIZE = 224
 SAMPLE_IMG_DIR = Path("sample_images")
 
-
-st.header("Image diagnosis of cancer using histopathology")
+st.header("Cancer Image diagnosis using histopathology")
 st.markdown(
-    "Predict whether samples of tumour tissue are *benign* or "
+    "Predict whether samples of tumour tissue are *begin* or "
     "*malignant (cancerous)*.\n\n"
     "[hp]: https://en.wikipedia.org/wiki/Histopathology"
 )
@@ -44,7 +43,7 @@ def get_sample_image_files() -> dict:
     """Fetch processed sample images, separated by label.
 
     Returns:
-        dict: Keys are labels ("benign" / "malignant"). Values are lists.
+        dict: Keys are labels ("begin" / "malignant"). Values are lists.
     """
     return {
         dir.name: [load_image(file) for file in dir.glob("*.jpg")]
@@ -59,20 +58,20 @@ def load_model() -> tf.keras.Model:
     Returns:
         tf.keras.Model: EfficientNet-B0 model.
     """
-    return tf.keras.models.load_model("cnn_model.h5")
+    return tf.keras.models.load_model("cnn_model.h5", compile=False)
 
 
 def get_prediction(image):
     pred = model.predict(np.expand_dims(image, 0), verbose=0)[0][0]
     if pred < 0.5:
         st.success(f"Result: {pred:.5f}")
-        st.markdown("Inference at *threshold==0.5*: :green['benign']")
+        st.markdown("Inference at *threshold==0.5*: :green['begin']")
     else:
         st.warning(f"Result: {pred:.5f}")
         st.markdown("Inference at *threshold==0.5*: :orange['malignant']")
     st.caption(
         "The model's output node has *sigmoid activation*, with 'malignant' "
-        "being the positive class (1), and 'benign' being the negative "
+        "being the positive class (1), and 'begin' being the negative "
         "class (0). Values close to 1 suggest high chances of malignancy, "
         "and vice versa."
     )
@@ -95,12 +94,9 @@ with upload_tab:
 with sample_tab:
     if st.button("Get sample image", type="primary"):
         # Randomly select a sample image
-        label = np.random.choice(["benign", "malignant"])
+        label = np.random.choice(["begin", "malignant"])
         image_list = sample_images[label]
         idx = np.random.choice(len(image_list))
         st.image(image_list[idx], caption=f"{label} sample")
         get_prediction(image_list[idx])
 
-st.caption(
-    "Not Social Club"
-)
